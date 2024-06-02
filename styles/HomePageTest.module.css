@@ -1,0 +1,271 @@
+  
+  
+   .myGlobalStyles {
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    overflow: auto;
+    min-height: 200vh ; /* Giới hạn chiều cao tối đa với max-height */
+    background-color: #010101;
+  }
+  .main_container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: row;
+  }
+  
+  /* Main Content Styles */
+  .main_content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 56px 0 16px 240px;
+    background-color: #010101;
+    
+  }
+  
+  /* Main Canvas Content Styles */
+  .main_canvas_content {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    padding: 24px 0 0;
+  }
+  
+  /* Video Card Styles */
+  .main_grid {
+    display: flex;
+    flex-direction: column;
+    width: 320px;
+    margin: 10px;
+    align-items: center;
+  }
+  
+  .main_thumbnail {
+    position: relative;
+    width: 320px;
+    height: 180px;
+    margin-bottom: 10px;
+  }
+  
+  .thumbnail_box {
+    width: 300px; /* Set the desired width */
+    height: 175px; /* Set the desired height */
+    border-radius: 10%;
+    overflow: hidden; /* Ensure the image doesn't flow outside the border */
+    position: relative; /* Needed for absolute positioning of the image */
+    display: flex; /* Use flexbox for centering */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .thumbnail_box img {
+    max-width: 100%;
+    max-height: 100%;
+    display: block; /* Remove any extra space below the image */
+    object-fit: cover; /* Cover the area, might cut off some parts of the image */
+  }
+  
+
+  .thumbnail_box:hover {
+    transform: scale(1.05);
+    border: 2px solid #313131;
+  }
+  
+  .main_canvas_heading {
+    width: 100%;
+    height: auto;
+    display: flex;
+    padding: 0 30px 1px 0;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 16px;
+  }
+  .recentthumbnail_box {
+    width: 300px; /* Đặt chiều rộng theo mong muốn */
+    height: 175px; /* Đặt chiều cao theo mong muốn */
+    background-color: #e0e0e0;
+    border-radius: 10%; /* Đặt góc tròn 50% để biến nó thành hình tròn */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* background-image: url('path_to_placeholder_image.jpg'); */
+    background-size: cover;
+    background-position: center;
+  }
+  .recentthumbnail_box:hover {
+    transform: scale(1.05);
+    border: 2px solid #0a78e5; /* Màu xanh đậm */
+  }
+  
+  .main_link{
+    border: 2px dashed rgba(113, 114, 116, 255);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+  }
+  .main_text {
+    color: rgb(207, 207, 207);
+    width: 302px;
+    font-size: 16px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-weight: 500;
+    line-height: 22px;
+    text-align: center;
+    margin: 0 auto; /* Căn giữa ngang */
+    /* margin-top: auto;  // Căn giữa dọc (nếu cần) */
+}
+  .main_banner_container {
+    top: 0px;
+    flex: 1;
+    left: 0px;
+    right: 0px;
+    width: 100%;
+    height: 60px;
+    margin: auto;
+    display: flex;
+    z-index: 2;
+    position: absolute;
+    flex-grow: 1;
+    align-self: flex-start;
+    align-items: flex-start;
+  }
+  .main_banner {
+    gap: 381px;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    width: auto;
+    height: 56px;
+    margin: auto;
+    display: flex;
+    padding: 0 16px;
+    z-index: 1;
+    position: absolute;
+    align-items: center;
+    flex-shrink: 0;
+    justify-content: space-between;
+  }
+  .main_end {
+    display: flex;
+    align-items: center;
+    padding-top: 0px;
+    padding-left: 90%;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    justify-content: flex-end;
+  }
+
+
+  .main_sign_in_box {
+    position: flex  ;
+    left: 20px;
+    top: 25px;
+    gap: 6px;
+    height: 36px;
+    display: flex;
+    padding: 0 15.610000610351562px 0 10px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+ 
+  .section_title {
+    margin-top: 30px;
+    margin-bottom: 10px;
+    font-size: 23px;
+    font-weight: 650 ;
+    width: 100%;
+    text-align: left;
+    padding-left: 16px; /* Align with video cards */
+    background-color: transparent;
+    border: none; /* Remove any border */
+    color: rgb(255, 255, 255);
+    background: transparent;
+}
+.main_nav_bar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 220px;
+  height: 100%;
+  background-color: #1b1a1a;
+}
+
+.main_nav_box_upper {
+  width: 100%;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.main_nav_grid_upper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.main_sign_in_box {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin-bottom: 100%; /* Adjust as needed */
+}
+
+.nav_body {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav_box {
+  height: 40px; /* Adjust the height as necessary */
+  width: 60%; /* Use full width of the container */
+  display: flex;
+  justify-content: center; /* Center the items horizontally */
+  align-items: center; /* Align the items vertically */
+  padding: 8px 12px; /* Padding for visual comfort */
+  margin-bottom: 4px; /* Space between items */
+  transition: transform 0.3s ease, box-shadow 0.2s ease;
+  border-radius: 20px; /* Rounded corners */
+}
+
+.nav_box:hover {
+  transform: scale(1.05); /* Slight increase in size on hover */
+  box-shadow: 0 8px 20px rgba(32, 33, 36, 0.2); /* Shadow for depth */
+  background-color: rgba(38, 39, 44, 0.95); /* Change background on hover */
+  cursor: pointer; /* Pointer to indicate clickable area */
+}
+
+
+.main_button_settings, .main_yticon {
+  margin-right: 12px; /* Space between icon and text */
+}
+
+  .nav_text {
+    color: rgba(255, 255, 255, 255);
+    font-size: 14px;
+    font-style: Medium;
+    text-align: left;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-weight: 500;
+    font-stretch: normal;
+    text-decoration: none;
+    height: auto;
+    margin-left: 0px;
+    line-height: 20px;
+   flex-grow: 1;
+
+}
+ 
