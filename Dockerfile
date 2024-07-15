@@ -1,6 +1,10 @@
 FROM node:16
 
-# Install necessary libraries for Canvas
+
+# Set working directory
+WORKDIR /app
+
+# Install necessary libraries for Canvas and other dependencies
 RUN apt-get update && apt-get install -y \
     libcairo2-dev \
     libpango1.0-dev \
@@ -10,7 +14,10 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     pkg-config
 
-WORKDIR /app/app
+# Set environment variables
+ENV YARN_VERSION=1.22.19
+ENV NODE_OPTIONS=--max_old_space_size=64096
+ENV PORT=3000
 
 # Copy package.json and yarn.lock into the correct directory
 COPY package.json yarn.lock ./
@@ -18,16 +25,26 @@ COPY package.json yarn.lock ./
 # Check if Yarn is installed and skip installation if it is
 RUN if ! which yarn; then npm install -g yarn; fi
 
-# Use Yarn to install dependencies
-RUN yarn install
+# Set yarn network timeout (optional, based on your history)
+RUN yarn config set network-timeout 600000 -g
+
+# Update browserslist database (optional, based on your history)
+RUN npx browserslist@latest --update-db
+
+# Install dependencies
+RUN yarn install -g
 
 # Copy the entire application folder into the container
 COPY . .
 
-# Set the localhost port for testing
-ENV PORT=3000
+# Lint the project (optional, based on your history)
+RUN yarn run lint
+
+# Build the project
+RUN yarn build
 
 # Inform Docker that the container listens on port 3000
 EXPOSE 3000
 
-CMD [ "yarn", "dev" ]
+# Set the command to run the application
+CMD ["yarn", "start"]
