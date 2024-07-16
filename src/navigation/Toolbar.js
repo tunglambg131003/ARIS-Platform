@@ -4,12 +4,12 @@ import { useModelStateStore } from '@/editor/store/useStore';
 import { useCurrentSelectedModel } from '@/context/CurrentSelectedModelProvider';
 import { v4 as uuidv4 } from 'uuid';
 import {
-	ArrowDownIcon,
 	AddIcon,
 	DeleteIcon,
 	DownloadIcon,
 	RepeatIcon,
 	SettingsIcon,
+	EditIcon,
 } from '@chakra-ui/icons';
 
 const PanelButtons = ({
@@ -26,7 +26,7 @@ const PanelButtons = ({
 				disabled={disabled}
 				variant="outline"
 				margin="0 10px"
-				color="black" // Set text color to white
+				color="white" // Set text color to white
 				_hover={{
 					bg: 'blue.500', // Change background to blue on hover
 					color: 'black', // Keep text color white on hover
@@ -37,7 +37,7 @@ const PanelButtons = ({
 				onClick={onClick}
 			>
 				<Flex alignItems="center" justifyContent="center">
-					{icon ? <Box as={icon} ml="0.5" color="black" /> : null}
+					{icon ? <Box as={icon} ml="0.5" color="white" /> : null}
 					{children}
 				</Flex>
 			</Button>
@@ -46,23 +46,16 @@ const PanelButtons = ({
 };
 
 const Toolbar = ({
-	onSaveToLocal,
-	onInitializeFromLocal,
-	onClearLocal,
+	onSave,
+	onLoadFromServer,
 	onExport,
+	onAddModel,
 	setModalOpen,
 }) => {
-	const { addModel, removeModel } = useModelStateStore();
+	const { removeModel, clearModels } = useModelStateStore();
 	const fileInputRef = useRef();
 	const { globallySelectedModel, setGloballySelectedModel } =
 		useCurrentSelectedModel();
-
-	const handleUpload = (e) => {
-		const uuid = uuidv4();
-		const file = e.target.files[0];
-		const fileURL = URL.createObjectURL(file);
-		addModel(fileURL, uuid);
-	};
 
 	const triggerFileInput = () => {
 		fileInputRef.current.click();
@@ -78,41 +71,19 @@ const Toolbar = ({
 	return (
 		<>
 			<Flex
-				visibility="hidden" // Hide the toolbar background
 				position="fixed"
-				width="1000px"
-				height="calc(100vh - 1050px)"
-				left="600"
-				margin="32px"
-				zIndex={98} // Lower zIndex so the buttons appear on top
-				boxShadow={'0px 0px 10px 0px rgba(0,0,0,0.75)'}
-				bgColor={'#292d39'}
-				borderRadius={'12px'}
-				top="10px"
-			>
-				{/* Toolbar background (hidden) */}
-			</Flex>
-
-			<Flex
-				position="fixed"
-				left="600"
+				left="30%"
 				top="10px"
 				margin="32px"
 				zIndex={99} // Ensure buttons are on top of the hidden toolbar
 				justifyContent="space-between"
-				width="1000px" // Match the width of the toolbar for proper alignment
+				width={'min-content'}
 			>
-				{/* Visible buttons */}
 				<Flex>
-					{/* Group for left buttons */}
+					<PanelButtons onClick={onSave} tooltip="Save" icon={EditIcon} />
 					<PanelButtons
-						onClick={onSaveToLocal}
-						tooltip="Save to local"
-						icon={ArrowDownIcon}
-					/>
-					<PanelButtons
-						onClick={onInitializeFromLocal}
-						tooltip="Load data from local"
+						onClick={onLoadFromServer}
+						tooltip="Load from last save"
 						icon={DownloadIcon}
 					/>
 					<PanelButtons
@@ -127,7 +98,7 @@ const Toolbar = ({
 						disabled={globallySelectedModel == null}
 					/>
 					<PanelButtons
-						onClick={onClearLocal}
+						onClick={() => clearModels()}
 						tooltip="Clear scene"
 						icon={RepeatIcon}
 					/>
@@ -142,7 +113,7 @@ const Toolbar = ({
 					<PanelButtons
 						onClick={onExport}
 						tooltip="Export"
-						hoverStyle={{ bg: 'blue.500', color: 'black' }}
+						hoverStyle={{ bg: 'blue.500', color: 'white' }}
 					>
 						Export
 					</PanelButtons>
@@ -155,7 +126,7 @@ const Toolbar = ({
 					accept=".glb, .gltf"
 					type="file"
 					id="toolbar-model-upload"
-					onChange={handleUpload}
+					onChange={onAddModel}
 				/>
 			</FormLabel>
 		</>

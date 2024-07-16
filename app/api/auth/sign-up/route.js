@@ -1,22 +1,27 @@
-// app/api/auth/sign-up/route.js
 import { hashPassWord } from '@/lib/authenticate';
 import clientPromise from '@/lib/mongoClient';
 import { NextResponse } from 'next/server';
 
 async function POST(req) {
-	const { email, password } = await req.json();
-	console.log('From API route, found email and password: ', email, password);
-	if (
-		!email ||
-		!email.includes('@') ||
-		!password ||
-		password.trim().length < 8
-	) {
+	const { email, password, username, name } = await req.json();
+
+	if (!email.includes('@')) {
+		console.log('invalid email');
 		return NextResponse.json(
+			{ message: 'Invalid Email' },
 			{
 				status: 422,
-			},
-			{ message: 'Password is invalid' }
+			}
+		);
+	}
+
+	if (password.trim().length < 8) {
+		console.log('password too short');
+		return NextResponse.json(
+			{ message: 'Password must be at least 8 characters long' },
+			{
+				status: 422,
+			}
 		);
 	}
 
@@ -26,49 +31,57 @@ async function POST(req) {
 	const existingUser = await db.collection('user').findOne({ email: email });
 
 	if (existingUser) {
-		client.close();
+		console.log('email already in use');
 		return NextResponse.json(
-			{ message: 'This email already exists with a user, try another email?' },
+			{ message: 'This email has already been used' },
 			{
 				status: 422,
 			}
 		);
 	}
 
+	const existingUser_2 = await db
+		.collection('user')
+		.findOne({ username: username });
+
+	if (existingUser_2) {
+		console.log('username already in use');
+		return NextResponse.json(
+			{ message: 'This username is already in use' },
+			{
+				status: 422,
+			}
+		);
+	}
+
+	console.log('all checks passed!');
 	const hashedPassword = await hashPassWord(password);
-
 	try {
-		const res = await db.collection('user').insertOne({
+		const result = await db.collection('user').insertOne({
 			email: email,
+			username: username,
+			name: name,
 			password: hashedPassword,
-			files: [],
+			stripeCustomerId: null,
+			stripeSubscriptionId: null,
+			plan: null,
+			dataLimit: null,
+			projects: [],
 		});
-		console.log(res);
-	} catch (error) {
-		console.log(error);
 		return NextResponse.json(
-			{ message: 'This email already exists with a user, try another email?' },
+			{ message: 'User susccessfully created!' },
 			{
-				status: 422,
+				status: 200,
+			}
+		);
+	} catch (err) {
+		return NextResponse.json(
+			{ message: 'User creation failed' },
+			{
+				status: 500,
 			}
 		);
 	}
-
-	client.close();
-	return NextResponse.json(
-		{
-			message: 'User Created!',
-		},
-		{
-			status: 201,
-		}
-	);
 }
 
-async function GET() {
-	return NextResponse.json({
-		message: 'This API route does not have a GET method',
-	});
-}
-
-export { POST, GET };
+export { POST };

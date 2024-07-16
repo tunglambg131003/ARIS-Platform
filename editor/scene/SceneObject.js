@@ -1,15 +1,16 @@
 'use client';
 
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
-import { OrbitControls, TransformControls } from '@react-three/drei';
+import { OrbitControls, useGLTF } from '@react-three/drei';
 import { useControls, folder } from 'leva';
 import MeshObject from '../model/MeshObject';
 import { useModelStateStore } from '../store/useStore';
 import { SceneContext } from '@/context/SceneProvider';
 import { useCurrentSelectedModel } from '@/context/CurrentSelectedModelProvider';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
-const SceneFiber = ({ enableAnimations }) => {
+const SceneFiber = ({ enableAnimations, fileURL }) => {
 	// to handle selected objects
 	const { scene } = useThree();
 	const { setScene } = useContext(SceneContext);
@@ -34,7 +35,19 @@ const SceneFiber = ({ enableAnimations }) => {
 			render: () => false,
 		},
 	}));
-	const { models } = useModelStateStore();
+
+	const { models, addModels } = useModelStateStore();
+	useEffect(() => {
+		const loader = new GLTFLoader();
+		if (!fileURL) return;
+		loader.load(fileURL, (gltf) => {
+			gltf.scene.traverse((child) => {
+				if (child.isMesh) {
+					addModels(child, child.name, child.uuid);
+				}
+			});
+		});
+	});
 	// const [editing, setEditing] = useState(false);
 
 	return (
@@ -44,12 +57,13 @@ const SceneFiber = ({ enableAnimations }) => {
 			<axesHelper args={[2]} />
 			<OrbitControls makeDefault />
 			{Object.entries(models).map(([uuid, model]) => {
+				console.log(model);
 				return (
 					<MeshObject
 						key={uuid}
 						fileUUID={uuid}
 						fileName={model.name}
-						fileURL={model.fileURL}
+						mesh={model.mesh}
 						editing={editing}
 						mode={mode}
 						globalEnableAnimations={enableAnimations}
