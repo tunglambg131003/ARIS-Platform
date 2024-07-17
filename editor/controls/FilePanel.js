@@ -106,8 +106,6 @@ const FilePanel = ({ setModalOpen, filename, user, projectName }) => {
 		const formData = new FormData();
 		formData.append('file', blob, '3dscene.glb');
 		formData.append('filename', filename);
-		formData.append('user', user);
-		formData.append('projectName', projectName);
 
 		try {
 			const res = await fetch('/api/upload-model', {
@@ -126,6 +124,9 @@ const FilePanel = ({ setModalOpen, filename, user, projectName }) => {
 		const formData = new FormData();
 		formData.append('file', blob, '3dscene.glb');
 		formData.append('filename', filename);
+		formData.append('user', user);
+		formData.append('projectName', projectName);
+
 		try {
 			const res = await fetch('/api/projects/patch', {
 				method: 'POST',
@@ -133,14 +134,15 @@ const FilePanel = ({ setModalOpen, filename, user, projectName }) => {
 			});
 			const data = await res.json();
 			console.log(data);
-			toast({
-				title: 'Project saved!',
-				description: 'Your project has been saved successfully.',
-				status: 'success',
-				duration: 9000,
-				isClosable: true,
-			});
-			if (data.status != 200) {
+			if (res.ok) {
+				toast({
+					title: 'Project saved!',
+					description: 'Your project has been saved successfully.',
+					status: 'success',
+					duration: 9000,
+					isClosable: true,
+				});
+			} else {
 				toast({
 					title: 'Error saving project',
 					description: 'There was an error saving your project.',

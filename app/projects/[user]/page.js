@@ -2,7 +2,7 @@
 
 import React from 'react';
 import ProjectsListing from '@/src/page-layouts/ProjectsListingPage';
-import { useParams } from 'next/navigation';
+import { useParams, redirect } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
 const UserProjects = () => {

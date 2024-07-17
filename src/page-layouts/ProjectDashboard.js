@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import {
 	Box,
 	Button,
-	Container,
 	Heading,
 	SimpleGrid,
 	Text,
@@ -13,10 +12,11 @@ import {
 	Spinner,
 } from '@chakra-ui/react';
 import Layout from '../navigation/layout';
+import { useRouter } from 'next/navigation';
 
 const ProjectDashboard = ({ user, projectName }) => {
 	const toast = useToast();
-
+	const router = useRouter();
 	const [projectData, setProjectData] = useState(null);
 
 	useEffect(() => {
@@ -97,13 +97,8 @@ const ProjectDashboard = ({ user, projectName }) => {
 									alignItems="center"
 									h="150px"
 									onClick={() =>
-										toast({
-											title: 'Wait',
-											description: 'This feature is not yet implemented.',
-											status: 'info',
-											duration: 5000,
-											isClosable: true,
-										})
+										// router.push(`/projects/${user}/${projectName}/edit`)
+										console.log('presseds')
 									}
 									_hover={{ bg: 'gray.800' }}
 									_focus={{ boxShadow: 'outline' }}

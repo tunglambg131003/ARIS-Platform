@@ -34,6 +34,8 @@ async function POST(req) {
 	const user = form.get('user');
 
 	if (user !== session.user?.username) {
+		console.log(session.user?.username);
+		console.log(user);
 		return NextResponse.json(
 			{
 				message: 'Unauthorized',
@@ -128,29 +130,30 @@ async function POST(req) {
 		await s3.putObject(uploadParams).promise();
 		console.log(`Uploaded new file ${fileName}`);
 
-		const projectCollection = db.collection('projects');
-		const projectIdentifier = `${user}/${projectName}`;
+		// const projectCollection = db.collection('projects');
+		// const projectIdentifier = `${user}/${projectName}`;
 
-		const updateResult = await projectCollection.updateOne(
-			{ projectIdentifier },
-			{ $set: { file: getFileURL(fileName) } }
-		);
+		// don't really have to do this because file name never changes
+		// const updateResult = await projectCollection.updateOne(
+		// 	{ projectIdentifier },
+		// 	{ $set: { file: getFileURL(fileName) } }
+		// );
 
-		if (updateResult.modifiedCount === 1) {
-			console.log(
-				`Successfully updated project ${projectIdentifier} with new file ${fileName}`
-			);
-		} else {
-			console.log(`Failed to update project ${projectIdentifier}`);
-			return NextResponse.json(
-				{
-					message: 'Failed to update project',
-				},
-				{
-					status: 500,
-				}
-			);
-		}
+		// if (updateResult.modifiedCount === 1) {
+		// 	console.log(
+		// 		`Successfully updated project ${projectIdentifier} with new file ${fileName}`
+		// 	);
+		// } else {
+		// 	console.log(`Failed to update project ${projectIdentifier}`);
+		// 	return NextResponse.json(
+		// 		{
+		// 			message: 'Failed to update project',
+		// 		},
+		// 		{
+		// 			status: 500,
+		// 		}
+		// 	);
+		// }
 
 		// Update user's data usage
 		await userCollection.updateOne(

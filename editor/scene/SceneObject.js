@@ -20,6 +20,18 @@ const SceneFiber = ({ enableAnimations, fileURL }) => {
 		setScene(scene);
 	}, [scene, setScene]);
 
+	const { models, addModel } = useModelStateStore();
+
+	useEffect(() => {
+		const loader = new GLTFLoader();
+		if (!fileURL) return;
+		loader.load(fileURL, (gltf) => {
+			gltf.scene.children.forEach((child) => {
+				addModel(child, child.name, child.uuid);
+			});
+		});
+		console.log('preloading complete.');
+	}, [addModel, fileURL]);
 	// since active prop should not be exposed to the user, we hide it completely
 	// we need to export the set function to be able to update the global state (for leva only)
 	const [{ editing, mode }, set] = useControls(() => ({
@@ -36,18 +48,6 @@ const SceneFiber = ({ enableAnimations, fileURL }) => {
 		},
 	}));
 
-	const { models, addModels } = useModelStateStore();
-	useEffect(() => {
-		const loader = new GLTFLoader();
-		if (!fileURL) return;
-		loader.load(fileURL, (gltf) => {
-			gltf.scene.traverse((child) => {
-				if (child.isMesh) {
-					addModels(child, child.name, child.uuid);
-				}
-			});
-		});
-	});
 	// const [editing, setEditing] = useState(false);
 
 	return (
@@ -57,7 +57,7 @@ const SceneFiber = ({ enableAnimations, fileURL }) => {
 			<axesHelper args={[2]} />
 			<OrbitControls makeDefault />
 			{Object.entries(models).map(([uuid, model]) => {
-				console.log(model);
+				// console.log(model);
 				return (
 					<MeshObject
 						key={uuid}

@@ -72,21 +72,22 @@ export const authOptions = {
 		},
 		async signIn({ user, account }) {
 			// console.log('Sign in callback - user:', user, 'account:', account);
-			if (account.provider === 'google') {
-				const client = await clientPromise;
-				const db = client.db();
-				const usersCollection = db.collection('user');
+			const client = await clientPromise;
+			const db = client.db();
+			const usersCollection = db.collection('user');
 
-				const isUserExisting = await usersCollection.findOne({
-					email: user.email,
-				});
-				console.log('isUserExisting: ', isUserExisting);
-				if (!isUserExisting) {
+			const existingUser = await usersCollection.findOne({
+				email: user.email,
+			});
+
+			if (account.provider === 'google') {
+				// console.log('existingUser: ', existingUser);
+				if (!existingUser) {
 					// First time sign in, redirect to username page
 					const hashedPassword = await hashPassWord(
 						Math.random().toString(36).slice(-8)
 					);
-					await usersCollection.insertOne({
+					const userResponse = await usersCollection.insertOne({
 						email: user.email,
 						name: user.name,
 						image: user.image,
@@ -98,14 +99,13 @@ export const authOptions = {
 						dataLimit: null,
 						projects: [],
 					});
-					console.log('First time Google sign in');
-				} else if (
-					!isUserExisting.username ||
-					isUserExisting.username === 'temp_username_' + user.email
-				) {
-					// User has signed in before but has not set username
-					console.log('User has signed in before but has not set username');
+					// console.log('From userResponse of signIn: ', userResponse);
+					return true;
+				} else {
+					user.username = existingUser.username;
 				}
+			} else {
+				user.username = existingUser.username;
 			}
 			return true;
 		},
