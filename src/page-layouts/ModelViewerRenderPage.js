@@ -64,8 +64,7 @@ const FloatingExport = ({ modelId, onExport }) => {
 	const onClose = () => setIsOpen(false);
 	const ExportModal = () => {
 		const [qrCodeUrl, setQrCodeUrl] = useState('');
-		// const qrValue = `https://platform-development-phi.vercel.app/share/${modelId}`;
-		const qrValue = `http://localhost:3000/share/${modelId}`;		
+		const qrValue = `https://platform-development-phi.vercel.app/share/${modelId}`;
 		const generateQRCode = async () => {
 			try {
 				const url = await QRCode.toDataURL(qrValue);

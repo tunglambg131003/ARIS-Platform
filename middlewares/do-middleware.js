@@ -1,5 +1,3 @@
-// const multer = require('multer');
-// const multerS3 = require('multer-s3');
 import { Endpoint } from 'aws-sdk';
 import { S3 } from '@aws-sdk/client-s3';
 import multer from 'multer';

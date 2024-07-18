@@ -5,53 +5,12 @@ import { getAllModelsFromDB, updateModelInDB, getModelDB } from './localdb';
 
 const useModelStateStore = create(
 	immer((set) => ({
-		models: {
-			// '5e96dbba-dc55-4460-9ff5-c694825f7944': {
-			// 	uuid: '5e96dbba-dc55-4460-9ff5-c694825f7944',
-			// 	fileURL: '/RobotExpressive.glb',
-			// 	name: 'robot',
-			// 	position: {
-			// 		x: 0,
-			// 		y: 0,
-			// 		z: 0,
-			// 	},
-			// 	rotation: {
-			// 		x: 0,
-			// 		y: 0,
-			// 		z: 0,
-			// 	},
-			// 	scale: {
-			// 		x: 1,
-			// 		y: 1,
-			// 		z: 1,
-			// 	},
-			// },
-			// '5e96dcba-dc55-4460-9ff5-d694825f3445': {
-			// 	uuid: '5e96dcba-dc55-4460-9ff5-d694825f3445',
-			// 	fileURL: '/chicken.glb',
-			// 	name: 'chicken',
-			// 	position: {
-			// 		x: 0,
-			// 		y: 0,
-			// 		z: 0,
-			// 	},
-			// 	rotation: {
-			// 		x: 0,
-			// 		y: 0,
-			// 		z: 0,
-			// 	},
-			// 	scale: {
-			// 		x: 1,
-			// 		y: 1,
-			// 		z: 1,
-			// 	},
-			// },
-		},
-		addModel: (fileURL, fileName, uuid) => {
+		models: {},
+		addModel: (fileMesh, fileName, uuid) => {
 			set((state) => {
 				state.models[uuid] = {
 					uuid: uuid,
-					fileURL: fileURL,
+					mesh: fileMesh,
 					name: fileName,
 					position: {
 						x: 0,
@@ -80,6 +39,11 @@ const useModelStateStore = create(
 		removeModel: (uuid) => {
 			set((state) => {
 				delete state.models[uuid];
+			});
+		},
+		clearModels: () => {
+			set((state) => {
+				state.models = {};
 			});
 		},
 	}))

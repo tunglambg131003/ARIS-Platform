@@ -1,65 +1,26 @@
 'use client';
 
 import { useContext } from 'react';
-import { Flex, Text, Button, Input } from '@chakra-ui/react';
 import {
-	saveToLocal,
 	clearLocal,
 	useModelStateStore,
 	initializeFromLocal,
 } from '../store/useStore';
-import { addModelToDB } from '../store/localdb';
 import { v4 as uuidv4 } from 'uuid';
 import { SceneContext } from '@/context/SceneProvider';
 import { useRouter } from 'next/navigation';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
 import Toolbar from '@/src/navigation/Toolbar';
-import { Box, Image } from '@chakra-ui/react';
+import { useToast } from '@chakra-ui/react';
 import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
 
-const AssetButton = ({ assetName, assetURL, assetImgUrl }) => {
-	const { addModel } = useModelStateStore();
-	const handleAddModel = () => {
-		const uuid = uuidv4();
-		addModel(assetURL, assetName, uuid);
-	};
-	return (
-		<Box
-			as="button"
-			onClick={handleAddModel}
-			width="100%"
-			// height="150px"
-			borderWidth="1px"
-			borderRadius="lg"
-			overflow="hidden"
-			textAlign="center"
-			mb="20px"
-			_hover={{
-				boxShadow: 'md',
-				cursor: 'pointer',
-				transform: 'translateY(-2px)',
-			}} // Slight lift effect on hover
-			transition="transform 0.2s, box-shadow 0.2s" // Smooth transition for hover effect
-		>
-			<Image
-				src={assetImgUrl}
-				alt={`Image of ${assetName}`}
-				width="100%"
-				height="150px" // This makes the image height adjust to its aspect ratio
-				objectFit="cover"
-			/>
-			<Text fontSize="lg" fontWeight="bold" mt="2" mb="2">
-				{assetName}
-			</Text>
-		</Box>
-	);
-};
-
-const FilePanel = ({ setModalOpen }) => {
+const FilePanel = ({ setModalOpen, filename, user, projectName }) => {
 	const { scene } = useContext(SceneContext);
 	const router = useRouter();
 	const exporter = new GLTFExporter();
+	const toast = useToast();
 
 	const filterMeshesFromScene = (originalScene) => {
 		const newScene = new THREE.Scene();
@@ -144,6 +105,8 @@ const FilePanel = ({ setModalOpen }) => {
 	const uploadToServer = async (blob) => {
 		const formData = new FormData();
 		formData.append('file', blob, '3dscene.glb');
+		formData.append('filename', filename);
+
 		try {
 			const res = await fetch('/api/upload-model', {
 				method: 'POST',
@@ -157,6 +120,77 @@ const FilePanel = ({ setModalOpen }) => {
 		}
 	};
 
+	const updateProjectFile = async (blob) => {
+		const formData = new FormData();
+		formData.append('file', blob, '3dscene.glb');
+		formData.append('filename', filename);
+		formData.append('user', user);
+		formData.append('projectName', projectName);
+
+		try {
+			const res = await fetch('/api/projects/patch', {
+				method: 'POST',
+				body: formData,
+			});
+			const data = await res.json();
+			console.log(data);
+			if (res.ok) {
+				toast({
+					title: 'Project saved!',
+					description: 'Your project has been saved successfully.',
+					status: 'success',
+					duration: 9000,
+					isClosable: true,
+				});
+			} else {
+				toast({
+					title: 'Error saving project',
+					description: 'There was an error saving your project.',
+					status: 'error',
+					duration: 9000,
+					isClosable: true,
+				});
+			}
+		} catch (err) {
+			console.error(err);
+			toast({
+				title: 'Error saving project',
+				description: 'There was an error saving your project.',
+				status: 'error',
+				duration: 9000,
+				isClosable: true,
+			});
+		}
+	};
+
+	const onSave = () => {
+		if (scene) {
+			const { newScene } = filterMeshesFromScene(scene);
+			const animations = [];
+			scene.traverse((node) => {
+				if (node.animations) {
+					animations.push(...node.animations);
+				}
+			});
+			console.log('animations: ', animations);
+			exporter.parse(
+				newScene,
+				(gltf) => {
+					console.log(gltf);
+					const blob = new Blob([gltf], { type: 'model/gltf-binary' });
+					updateProjectFile(blob);
+				},
+				(err) => {
+					console.error(err);
+				},
+				{
+					binary: true,
+					animations: animations,
+				}
+			);
+		}
+	};
+
 	const { addModel } = useModelStateStore();
 
 	const handleUpload = (e) => {
@@ -164,101 +198,21 @@ const FilePanel = ({ setModalOpen }) => {
 		const file = e.target.files[0];
 		const fileURL = URL.createObjectURL(file);
 
-		addModelToDB({
-			uuid: uuid,
-			file: file,
-			position: { x: 0, y: 0, z: 0 },
-			rotation: { x: 0, y: 0, z: 0 },
-			scale: { x: 1, y: 1, z: 1 },
+		const loader = new GLTFLoader();
+		if (!fileURL) return;
+		loader.load(fileURL, (gltf) => {
+			gltf.scene.children.forEach((child) => {
+				addModel(child, child.name, child.uuid);
+			});
 		});
-		addModel(fileURL, uuid);
-		console.log(file);
 	};
 
 	return (
 		<>
-			<Flex
-				position="fixed"
-				width="300px"
-				height="calc(100vh - 64px)"
-				left="0"
-				margin="32px"
-				zIndex={99}
-				boxShadow={'0px 0px 10px 0px rgba(0,0,0,0.75)'}
-				bgColor={'#292d39'}
-				borderRadius={'12px'}
-				// padding={'24px'}
-				alignItems={'center'}
-				flexDirection={'column'}
-				// alignItems={'center'}
-			>
-				<Flex height="70px" justifyContent={'center'} alignItems={'center'}>
-					<Text fontFamily="Monospace" color="#8c92a3" fontSize="2xl">
-						Assets
-					</Text>
-				</Flex>
-				<Flex
-					width="100%"
-					borderRadius={'12px 12px 0 0 '}
-					// justifyContent={'center'}
-					alignItems={'center'}
-					padding={'24px'}
-					bgColor="#181c20"
-					flexDir={'column'}
-					height="calc(100% - 70px)"
-					overflowY={'scroll'}
-				>
-					<Box>
-						<AssetButton
-							assetName="Bird.glb"
-							assetURL="/Bird.glb"
-							assetImgUrl="/Bird.png"
-						/>
-						<AssetButton
-							assetName="Farm.glb"
-							assetURL="/farm.glb"
-							assetImgUrl="/Farm.png"
-						/>
-						<AssetButton
-							assetName="Heart.glb"
-							assetURL="/heart.glb"
-							assetImgUrl="/Heart.png"
-						/>
-						<AssetButton
-							assetName="Chicken.glb"
-							assetURL="/chicken.glb"
-							assetImgUrl="/chicken.png"
-						/>
-						<AssetButton
-							assetName="Earth.glb"
-							assetURL="/earth.glb"
-							assetImgUrl="/earth.png"
-						/>
-						<AssetButton
-							assetName="animated Robot"
-							assetURL="/RobotExpressive.glb"
-							assetImgUrl="/expressive robot.png"
-						/>
-						<AssetButton
-							assetName="skull"
-							assetURL="/skull.glb"
-							assetImgUrl="/expressive robot.png"
-						/>
-					</Box>
-				</Flex>
-			</Flex>
 			<Toolbar
-				onSaveToLocal={saveToLocal}
-				onInitializeFromLocal={initializeFromLocal}
-				onAddModel={() => {
-					<Input
-						hidden
-						accept=".glb, .gltf"
-						type="file"
-						id="editor-model-upload"
-						onChange={(e) => handleUpload(e)}
-					/>;
-				}}
+				onSave={onSave}
+				onLoadFromServer={initializeFromLocal}
+				onAddModel={handleUpload}
 				onClearLocal={clearLocal}
 				onExport={onExport}
 				setModalOpen={setModalOpen}
