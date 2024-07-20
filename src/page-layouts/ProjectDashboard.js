@@ -97,8 +97,8 @@ const ProjectDashboard = ({ user, projectName }) => {
 									alignItems="center"
 									h="150px"
 									onClick={() =>
-										// router.push(`/projects/${user}/${projectName}/edit`)
-										console.log('presseds')
+										router.push(`/projects/${user}/${projectName}/edit`)
+										// console.log('presseds')
 									}
 									_hover={{ bg: 'gray.800' }}
 									_focus={{ boxShadow: 'outline' }}
