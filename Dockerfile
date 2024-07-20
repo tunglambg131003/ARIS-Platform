@@ -26,10 +26,8 @@ COPY package.json yarn.lock ./
 RUN if ! which yarn; then npm install -g yarn; fi
 
 # Set yarn network timeout (optional, based on your history)
-RUN yarn config set network-timeout 600000 -g
+RUN yarn config set network-timeout 36000000 -g
 
-# Update browserslist database (optional, based on your history)
-RUN npx browserslist@latest --update-db
 
 # Install dependencies
 RUN yarn install -g
@@ -39,6 +37,9 @@ COPY . .
 
 # Lint the project (optional, based on your history)
 RUN yarn run lint
+
+# Update browserslist database (optional, based on your history)
+#RUN npx browserslist@latest --update-db
 
 # Build the project
 RUN yarn build

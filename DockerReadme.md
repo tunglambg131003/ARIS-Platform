@@ -38,6 +38,7 @@ You should see the container listed with the name aris_platform.
 
 ### 5. Access the Application
 If your application is running on port 3000 inside the container, you can access it via http://localhost:3000 in your web browser.
+docker buildx build --platform linux/amd64,linux/arm64 -t khoituanphan/aris_platform:1.2 --push .
 
 ### 6. Stop and Remove the Container
 To stop the running container, use the following command:
