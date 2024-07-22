@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y \
 ENV YARN_VERSION=1.22.19
 ENV NODE_OPTIONS=--max_old_space_size=64096
 ENV PORT=3000
+ENV NODE_ENV=production
 
 # Copy package.json and yarn.lock into the correct directory
 COPY package.json yarn.lock ./
