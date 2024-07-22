@@ -6,6 +6,9 @@
 
 ## Steps to Pull and Run a Docker Image
 
+docker buildx build --platform linux/amd64,linux/arm64 -t khoituanphan/aris_platform:1.3 --push .
+
+docker buildx build --platform linux/amd64 -t khoituanphan/aris_platform:1.5 --push .
 ### 1. Pull the Docker Image
 
 To pull a specific version of a Docker image from Docker Hub, use the following command:
@@ -20,7 +23,7 @@ docker pull khoituanphan/aris_platform:1.2
 ### 2. Choose the Version to Pull
 If the Docker image supports multiple architectures (e.g., amd64 and arm64), you can specify the platform when pulling the image:
 ```sh
-docker pull --platform amd64 khoituanphan/aris_platform:1.2
+docker pull --platform amd64 khoituanphan/aris_platform:1.5
 ```
 
 ### 3. Run the Docker Container
